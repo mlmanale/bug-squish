@@ -1,14 +1,12 @@
-let spriteSheet;
+let spriteSheet, insideX, insideY;
 let killCount = 0;
-let insideX;
-let insideY;
 let bugTimer = 30;
 let screenWidth = 1200;
 let screenHeight = 400;
 let speed =  Math.floor(Math.random() * 3) + 1;
 let buggy = [];
 let totalBugs = 5;
-let num;
+
 
 //bug class
 class Bugs {
@@ -40,8 +38,11 @@ class Bugs {
       
       if(this.alive){
       this.draw()
+      
       this.x += this.xVelocity;
       this.y += this.yVelocity;
+      
+      //teleport if they go off screen
       if (this.x > screenWidth) {
         this.x = 0-this.width;
       }
@@ -57,13 +58,6 @@ class Bugs {
     }
     }
     
-    //checker for bug
-    contains(x,y) {
-      insideX = x >= this.x && x<= this.x + this.width;
-      insideY = y >= this.y && y <= this.y + this.height;
-      return insideX && insideY;
-    }
-    
     stop() {
       this.xVelocity = 0;
     }
@@ -71,7 +65,6 @@ class Bugs {
 
 function setup() {
   createCanvas(screenWidth, screenHeight);
-  
 }
 
 function preload() {
@@ -81,9 +74,9 @@ function preload() {
       totalBugs++;
     }
   }
-
 }
 
+//main
 function draw() {
   background(220);
   rectMode(CORNER);
@@ -94,25 +87,26 @@ function draw() {
   }
 }
 
-//timer
+//Game timer
 let timer = setInterval(()=>{
   if (bugTimer > 0) {
     bugTimer--;
+  }
+  else if (bugTimer = 0) {
+    gameOver = true;
   }
   else {
     clearInterval(timer);
   }
 }, 1000)
 
-//killcount and kill
+//Killcount, kill, new spawn on kill
 function mousePressed(){
   for(let i=0; i <= totalBugs; i++) {
-    // let contains = buggy[i].contains(mouseX,mouseY);
-    // if (contains = true){
     if((mouseX >= buggy[i].x) && (mouseX<= buggy[i].x + buggy[i].width) && 
     (mouseY >= buggy[i].y) && (mouseY <= buggy[i].y + buggy[i].height)){
       if(!buggy[i].pressed){
-        speed += 1;
+        speed += .5;
         killCount +=1;
         buggy[i].pressed = true;
         buggy[i].alive = false;
@@ -120,18 +114,9 @@ function mousePressed(){
       }
       setTimeout(()=>{
         buggy[i] = new Bugs();
-      }, 300)
+      }, 200)
     } 
 
   }
 }
-
-function makeBugs(num) {
-  for(let i = 1+ totalBugs; i < 1+ totalBugs + num; i++) {
-    buggy[i] = new Bugs();
-  }
-  totalBugs = 1+totalBugs + num;
-}
-
-//bug class
 
