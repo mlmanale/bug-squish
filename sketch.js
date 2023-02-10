@@ -1,6 +1,6 @@
 let spriteSheet, insideX, insideY;
 let killCount = 0;
-let bugTimer = 30;
+let bugTimer = 5;
 let screenWidth = 1200;
 let screenHeight = 400;
 let speed =  Math.floor(Math.random() * 3) + 1;
@@ -82,18 +82,31 @@ function draw() {
   rectMode(CORNER);
   text('Time remaining: ' + bugTimer, 0, 10);
   text('Bugs killed: ' + killCount, 0,20);
-  for(let i=0; i <= totalBugs; i++) {
-    buggy[i].update();
+  if (bugTimer > 0) {
+    for(let i=0; i <= totalBugs; i++) {
+      buggy[i].update();
+      }
+    }
+    else {
+      push();
+        background('red');
+        textAlign(CENTER);
+        noStroke();
+        fill('white');
+        text('GAME OVER!', screenWidth/2, screenHeight/2,);
+        text('Your score was: ' + killCount + ' bugs squished', screenWidth/2, screenHeight/2 + 60);
+      pop();
+    }
   }
-}
+  // for(let i=0; i <= totalBugs; i++) {
+  //   buggy[i].update();
+  // }
+
 
 //Game timer
 let timer = setInterval(()=>{
   if (bugTimer > 0) {
     bugTimer--;
-  }
-  else if (bugTimer = 0) {
-    gameOver = true;
   }
   else {
     clearInterval(timer);
