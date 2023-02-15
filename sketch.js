@@ -1,47 +1,54 @@
 let spriteSheet, insideX, insideY;
 let killCount = 0;
-let bugTimer = 5;
+let bugTimer = 30;
 let screenWidth = 1200;
 let screenHeight = 400;
 let speed =  Math.floor(Math.random() * 3) + 1;
 let buggy = [];
 let totalBugs = 5;
+let frame = 0;
+let v = 0;
+let animationLength = 8;
+let currentFrame = 0;
+let sw = 53;
+let sh = 53;
+let sx = 0;
+let sy = 0;
 
 
 //bug class
 class Bugs {
   constructor() {
-    this.height = 50;
-    this.width = 50;
-    this.x = Math.floor(Math.random() * (400 - this.width));
+    this.height = 53;
+    this.width = 53;
+    this.x = Math.floor(Math.random() * (1200 - this.width));
     this.y = Math.floor(Math.random() * (400 - this.height));
     this.xVelocity = Math.random() < 0.5 ? -speed : speed;
     this.yVelocity = Math.random() < 0.5 ? -speed : speed;
     this.alive = true;
     this.pressed = false;
-    //this.ss = ss;
+    this.ss = spriteSheet;
     this.dir = Math.random() < 0.5 ? 1 : -1;
     if (this.dir == 0) {
       this.dir = -1;
     }
-    
   }
     draw() {
-    push();
-      //scale(this.dir,1);
-      rect(this.x,this.y,this.height,this.width);
-    pop();
-    fill('red');
+    image(this.ss, this.x, this.y, sh, sw, frame*sh, v*sw, sh, sw);
+    }
+
+    dead() {
+      image(this.ss, this.x, this.y, this.width, this.height, 424, 0, sh, sw);
     }
     
     update(){
-      
       if(this.alive){
-      this.draw()
+      this.draw();
       
       this.x += this.xVelocity;
       this.y += this.yVelocity;
-      
+      frame = (currentFrame) % animationLength;
+      currentFrame = currentFrame  + 1;
       //teleport if they go off screen
       if (this.x > screenWidth) {
         this.x = 0-this.width;
@@ -55,11 +62,15 @@ class Bugs {
       if (this.y <0-this.height) {
         this.y = screenHeight
       }
+    } else if(!this.alive) {
+      this.dead();
     }
+
     }
     
     stop() {
       this.xVelocity = 0;
+
     }
     }
 
@@ -68,6 +79,7 @@ function setup() {
 }
 
 function preload() {
+  spriteSheet = loadImage("buggy.png");
   for(let i=0; i <= totalBugs; i++) {
     buggy[i] = new Bugs();
     if(buggy[i].alive != true) {
@@ -80,6 +92,7 @@ function preload() {
 function draw() {
   background(220);
   rectMode(CORNER);
+  imageMode(CENTER);
   text('Time remaining: ' + bugTimer, 0, 10);
   text('Bugs killed: ' + killCount, 0,20);
   if (bugTimer > 0) {
@@ -116,8 +129,8 @@ let timer = setInterval(()=>{
 //Killcount, kill, new spawn on kill
 function mousePressed(){
   for(let i=0; i <= totalBugs; i++) {
-    if((mouseX >= buggy[i].x) && (mouseX<= buggy[i].x + buggy[i].width) && 
-    (mouseY >= buggy[i].y) && (mouseY <= buggy[i].y + buggy[i].height)){
+    if((mouseX >= buggy[i].x- 27) && (mouseX<= buggy[i].x +27)  && 
+    (mouseY >= buggy[i].y - 27) && (mouseY <= buggy[i].y +27)){
       if(!buggy[i].pressed){
         speed += .5;
         killCount +=1;
